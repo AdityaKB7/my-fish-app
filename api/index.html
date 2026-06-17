@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fish Weight AI Predictor</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg-color: #f1f5f9;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            margin: 0 0 10px 0;
+            font-size: 1.8rem;
+            color: var(--primary-color);
+        }
+
+        .header p {
+            margin: 0;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 1rem;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+            background-color: white;
+        }
+
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .input-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .input-row .input-group {
+            flex: 1;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        button:disabled {
+            background-color: #93c5fd;
+            cursor: not-allowed;
+        }
+
+        #result-box {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #eff6ff;
+            border: 1px dashed #bfdbfe;
+            text-align: center;
+            display: none;
+        }
+
+        #result-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin: 10px 0;
+        }
+
+        .error-message {
+            color: #ef4444;
+            background-color: #fef2f2;
+            border-color: #fca5a5;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h1>Fish Weight AI</h1>
+            <p>Enter the measurements to predict the weight</p>
+        </div>
+
+        <form id="prediction-form">
+            
+            <div class="input-group">
+                <label for="species">Fish Species</label>
+                <select id="species" required>
+                    <option value="" disabled selected>Select a species...</option>
+                    <option value="Bream">Bream</option>
+                    <option value="Roach">Roach</option>
+                    <option value="Whitefish">Whitefish</option>
+                    <option value="Parkki">Parkki</option>
+                    <option value="Smelt">Smelt</option>
+                    <option value="Pike">Pike</option>
+                    <option value="Perch">Perch</option>
+                </select>
+            </div>
+
+            <div class="input-row">
+                <div class="input-group">
+                    <label for="length1">Length 1 (cm)</label>
+                    <input type="number" id="length1" step="0.1" required placeholder="e.g. 23.2">
+                </div>
+                <div class="input-group">
+                    <label for="length2">Length 2 (cm)</label>
+                    <input type="number" id="length2" step="0.1" required placeholder="e.g. 25.4">
+                </div>
+            </div>
+
+            <div class="input-row">
+                <div class="input-group">
+                    <label for="length3">Length 3 (cm)</label>
+                    <input type="number" id="length3" step="0.1" required placeholder="e.g. 30.0">
+                </div>
+                <div class="input-group">
+                    <label for="height">Height (cm)</label>
+                    <input type="number" id="height" step="0.01" required placeholder="e.g. 11.52">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="width">Width (cm)</label>
+                <input type="number" id="width" step="0.01" required placeholder="e.g. 4.02">
+            </div>
+
+            <button type="submit" id="submit-btn">Predict Weight</button>
+        </form>
+
+        <div id="result-box">
+            <div style="font-size: 0.9rem; font-weight: 600;">Estimated Weight</div>
+            <div id="result-value">--</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">grams</div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('prediction-form').addEventListener('submit', async (e) => {
+            e.preventDefault(); 
+            
+            const btn = document.getElementById('submit-btn');
+            const resultBox = document.getElementById('result-box');
+            const resultValue = document.getElementById('result-value');
+            
+            btn.disabled = true;
+            btn.innerText = 'Calculating...';
+            resultBox.style.display = 'none';
+            resultBox.classList.remove('error-message');
+
+            // UPDATED PAYLOAD: Now includes the selected species string
+            const payload = {
+                species: document.getElementById('species').value,
+                length1: parseFloat(document.getElementById('length1').value),
+                length2: parseFloat(document.getElementById('length2').value),
+                length3: parseFloat(document.getElementById('length3').value),
+                height: parseFloat(document.getElementById('height').value),
+                width: parseFloat(document.getElementById('width').value)
+            };
+
+            try {
+                const response = await fetch('/api/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+
+                if (response.ok && !data.error) {
+                    resultValue.innerText = data.predicted_weight + ' g';
+                    resultBox.style.display = 'block';
+                } else {
+                    throw new Error(data.error || 'Failed to get prediction');
+                }
+            } catch (error) {
+                resultValue.innerText = "Error";
+                resultBox.innerHTML = `<div>Something went wrong. Is your API running?</div><div style="font-size:0.8rem; margin-top:5px;">${error.message}</div>`;
+                resultBox.classList.add('error-message');
+                resultBox.style.display = 'block';
+            } finally {
+                btn.disabled = false;
+                btn.innerText = 'Predict Weight';
+            }
+        });
+    </script>
+</body>
+</html>

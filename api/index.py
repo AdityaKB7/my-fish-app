@@ -11,7 +11,7 @@ ct = joblib.load('api/fish_transformer.joblib')
 scaler = joblib.load('api/fish_scaler.joblib')
 model = joblib.load('api/fish_model.joblib')
 
-# 2. NEW HOMEPAGE ROUTE: This serves your index.html when someone opens the link!
+# 2. HOMEPAGE ROUTE
 @app.route('/')
 def home():
     return send_from_directory(app.static_folder, 'index.html')
@@ -35,7 +35,15 @@ def predict():
         scaled_data = scaler.transform(encoded_data)
         prediction = model.predict(scaled_data)
         
-        return jsonify({'predicted_weight': round(prediction[0], 2)})
+        final_weight = round(prediction[0], 2)
+        
+        # --- THE FIX: Guardrail for impossible negative predictions ---
+        if final_weight < 0:
+            return jsonify({
+                'error': f"Impossible prediction ({final_weight}g). These dimensions are unnatural for a {data['species']}!"
+            })
+        
+        return jsonify({'predicted_weight': final_weight})
         
     except Exception as e:
         return jsonify({'error': str(e)})
